@@ -17,11 +17,7 @@ jobs:
       env:
         GITHUB_TOKEN : ${{ secrets.GITHUB_TOKEN }}
       with: 
-        tag_name: ${{ github.ref }}
-        release_name: Release ${{ github.ref }}
-        body: |
-          Changes in this Release
-          - First Change
-          - Second Change
+        tag_name: bjet
+        release_name: bjet
         draft: false
         prerelease: false

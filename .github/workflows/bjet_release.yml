@@ -17,7 +17,15 @@ jobs:
       env:
         GITHUB_TOKEN : ${{ secrets.GITHUB_TOKEN }}
       with: 
-        tag_name: bjet
-        release_name: bjet
-        draft: false
-        prerelease: false
+        script: |
+          const now = new Date().toISOString().slice(0,10).replace(/-/g, ''); // YYYYMMDD
+          const counter = '${{ steps.increment_counter.outputs.counter }}';
+          const tagName = `v${now}-${counter}`;
+          console.log(`Creating tag: ${tagName}`);
+          github.rest.git.createTag({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            tag: tagName,
+            message: `Release ${tagName}`, // Optional tag message
+            object: context.sha // SHA of the commit to tag
+          });

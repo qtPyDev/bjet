@@ -12,20 +12,8 @@ jobs:
         type: 'zip'
         filename: 'bjet-release.zip'
         exclusions: '*.git* /*node_modules/* .editorconfig'
-    - name: Create Release
-      uses: actions/github-script@v6
-      env:
-        GITHUB_TOKEN : ${{ secrets.GITHUB_TOKEN }}
-      with: 
-        script: |
-          const now = new Date().toISOString().slice(0,10).replace(/-/g, ''); // YYYYMMDD
-          const counter = '${{ steps.increment_counter.outputs.counter }}';
-          const tagName = `v${now}-${counter}`;
-          console.log(`Creating tag: ${tagName}`);
-          github.rest.git.createTag({
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            tag: tagName,
-            message: `Release ${tagName}`, // Optional tag message
-            object: context.sha // SHA of the commit to tag
-          });
+    - name: Upload Release
+      uses: ncipollo/release-action@v1.12.0
+      with:
+        artifacts: "release.zip"
+        token: ${{ secrets.GITHUB_TOKEN }}

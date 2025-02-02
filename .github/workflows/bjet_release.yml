@@ -14,7 +14,7 @@ jobs:
     - name: Upload Release
       uses: ncipollo/release-action@v1.12.0
       with:
-        tag: bjet_v*
-        release: bjet_v*
+        tag: bjet_v1
+        release: bjet_v1
         artifacts: "release.zip"
         token: ${{ secrets.GITHUB_TOKEN }}

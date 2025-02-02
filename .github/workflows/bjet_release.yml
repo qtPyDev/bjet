@@ -1,6 +1,9 @@
 name: Build Workflow
 
 on: [push]
+create:
+  tags:
+    - v*
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -12,9 +15,16 @@ jobs:
         type: 'zip'
         filename: 'bjet-release.zip'
         exclusions: '*.git* /*node_modules/* .editorconfig'
+    - name: Create Tag
+      id: create_tag
+      uses: jaywcjlove/create-tag-action@main
+      if: env.previous_tag
+      with:
+        test: '[R|r]elease[d]\s+[v|V]\d(\.\d+){0,2}'
     - name: Upload Release
       uses: ncipollo/release-action@v1.12.0
       with:
-        fetch-depth: 0
+        name: ${{ steps.create_tag.outputs.version }}
+        tag: ${{ steps.create_tag.outputs.version }}
         artifacts: "release.zip"
         token: ${{ secrets.GITHUB_TOKEN }}

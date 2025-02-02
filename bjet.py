@@ -3,7 +3,7 @@
 import sys
 import os
 
-import app_config as config
+import bjet_config as config
 
 script_path = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(f'{script_path}/{config.APP_NAME}')
@@ -11,7 +11,7 @@ sys.path.append(f'{script_path}/{config.APP_NAME}')
 import client
 import post
 import menu
-import applog
+import bjetlog
 
 
 

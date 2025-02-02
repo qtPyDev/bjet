@@ -2,9 +2,9 @@
 
 import os
 import json
-import app_config as config
+import bjet_config as config
 
-from applog import log
+from bjetlog import log
 
 from getpass import getpass
 from atproto import Client

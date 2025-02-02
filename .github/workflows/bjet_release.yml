@@ -12,12 +12,16 @@ jobs:
         type: 'zip'
         filename: 'bjet-release.zip'
         exclusions: '*.git* /*node_modules/* .editorconfig'
-    - name: Upload Release
-      uses: aurestic/incrementarl-create-release@master
-      with:
-        flag_branch: true
-        message: Bump version
-        prev_tag: 'bjet-v'
-        update_odoo_module_version: true
+    - name: Create Release
+      uses: actions/create-release@v4
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN : ${{ secrets.GITHUB_TOKEN }}
+      with: 
+        tag_name: ${{ github.ref }}
+        release_name: Release ${{ github.ref }}
+        body: |
+          Changes in this Release
+          - First Change
+          - Second Change
+        draft: false
+        prerelease: false

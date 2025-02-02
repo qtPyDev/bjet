@@ -7,8 +7,6 @@ on:
 jobs:
   build-windows:
     permissions: write-all
-    name: print-token
-    environment: dev
     # needs: pre-pkr
     runs-on: windows-2019
     steps:

@@ -1,27 +1,66 @@
-name: Build Workflow
+name: Python Release Build and Zip
 
-on: [push]
+on:
+  push:
+    tags:
+      - 'v*' # Trigger on tags like v1.0.0, v1.2, etc.
+
 jobs:
-  build:
+  build-and-release:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
     steps:
-    - uses: actions/checkout@master
-    - name: Archive Release
-      uses: thedoctor0/zip-release@0.7.5
-      with:
-        type: 'zip'
-        filename: 'bjet-release.zip'
-        exclusions: '*.git* /*node_modules/* .editorconfig'
-    - name: Create Tag
-      id: create_tag
-      uses: jaywcjlove/create-tag-action@main
-      if: env.previous_tag
-      with:
-        test: '[R|r]elease[d]\s+[v|V]\d(\.\d+){0,2}'
-    - name: Upload Release
-      uses: ncipollo/release-action@v1.12.0
-      with:
-        name: ${{ steps.create_tag.outputs.version }}
-        tag: ${{ steps.create_tag.outputs.version }}
-        artifacts: "release.zip"
-        token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x' # Or your specific Python version
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt # If you have a requirements file
+
+      - name: Build package (if applicable)
+        run: python setup.py sdist bdist_wheel # Or your build command.  For simple zips, skip this.
+
+      - name: Zip the distribution (or project)
+        run: |
+          if [ -d "dist" ]; then  # Check if 'dist' directory exists (after building a package)
+            zip -r release.zip dist/*
+          else # If no 'dist', zip the project directory. Adapt as needed!
+             zip -r release.zip .  # Zips the entire repository.  Be careful with this.
+             # OR zip specific folders/files:
+             # zip -r release.zip your_folder another_file.py
+          fi
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          body: |
+            ## What's New in this Release?
+
+            * Add your release notes here.  Use * for lists, ** for bold, etc.
+            * You can even use markdown!
+
+            Full Changelog: ${{ github.event.before }}...${{ github.sha }}
+
+          draft: false
+          prerelease: false
+
+      - name: Upload Release Asset (zip file)
+        uses: actions/upload-release-asset@v1
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./release.zip
+          asset_name: release.zip
+          asset_content_type: application/zip

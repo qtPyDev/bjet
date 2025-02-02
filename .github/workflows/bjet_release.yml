@@ -13,7 +13,7 @@ jobs:
         filename: 'bjet-release.zip'
         exclusions: '*.git* /*node_modules/* .editorconfig'
     - name: Create Release
-      uses: actions/create-release@v4
+      uses: actions/create-release@v2
       env:
         GITHUB_TOKEN : ${{ secrets.GITHUB_TOKEN }}
       with: 

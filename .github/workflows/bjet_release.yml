@@ -13,7 +13,11 @@ jobs:
         filename: 'bjet-release.zip'
         exclusions: '*.git* /*node_modules/* .editorconfig'
     - name: Upload Release
-      uses: ncipollo/release-action@v1.12.0
+      uses: aurestic/incrementarl-create-release@master
       with:
-        artifacts: "bjet-release.zip"
-        token: ${{ secrets.GITHUB_TOKEN }}
+        flag_branch: true
+        message: Bump version
+        prev_tag: 'bjet-v'
+        update_odoo_module_version: true
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

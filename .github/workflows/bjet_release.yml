@@ -1,53 +1,19 @@
 name: Build Workflow
 
-on:
-  push:
-#    branches: main
-
+on: [push]
 jobs:
-  build-windows:
-    permissions: write-all
-    # needs: pre-pkr
-    runs-on: windows-2019
+  build:
+    runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v1
-      - name: Install Python
-        uses: actions/setup-python@v1
-        with:
-          python-version: '3.13'
-          architecture: 'x64'
-      - name: Install requirements
-        run: |
-          pip install -r requirements.txt
-      - name: Run PyInstaller
-        run: |
-          python -m PyInstaller bjet.spec
-      - uses: actions/upload-artifact@v4
-        with:
-          name: Windows_bjet
-          path: dist/bjet.exe
-
-      - name: create release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: bjet_v1.0
-          release_name: bjet_v1.0
-          overwrite: true
-          body: |
-            Test Release v1.0.0
-          draft: false
-          prerelease: false
-      - name: Upload Release Asset
-        id: upload-release-asset
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{steps.create_release.outputs.upload_url}}
-          asset_path: dist/bjet.exe
-          asset_name: bjet-Windows-amd64.exe
-          asset_content_type: application/zip
+    - uses: actions/checkout@master
+    - name: Archive Release
+      uses: thedoctor0/zip-release@0.7.5
+      with:
+        type: 'zip'
+        filename: 'bjet-release.zip'
+        exclusions: '*.git* /*node_modules/* .editorconfig'
+    - name: Upload Release
+      uses: ncipollo/release-action@v1.12.0
+      with:
+        artifacts: "bjet-release.zip"
+        token: ${{ secrets.GITHUB_TOKEN }}
